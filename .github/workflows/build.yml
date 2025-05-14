@@ -10,7 +10,7 @@ jobs:
       - name: Checkout user config
         uses: actions/checkout@v3
 
-      - name: Install west and clone ZMK
+      - name: Install west and set up ZMK
         run: |
           pip install west
           git clone https://github.com/zmkfirmware/zmk.git zmk
@@ -21,7 +21,8 @@ jobs:
 
       - name: Build firmware (left)
         run: |
-          west build -s zmk/app -b akdk_bt1 -d build/left \
+          cd zmk
+          west build -s app -b akdk_bt1 -d ../build/left \
             -- -DSHIELD=kod_01_left \
                -DZMK_CONFIG=${{ github.workspace }}/config \
                -DZMK_EXTRA_MODULES=${{ github.workspace }} \
