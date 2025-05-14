@@ -1,0 +1,7 @@
+/ {
+    matrix {
+        compatible = "zmk,matrix-transform";
+        rows = <2>;
+        cols = <3>;
+    };
+};
