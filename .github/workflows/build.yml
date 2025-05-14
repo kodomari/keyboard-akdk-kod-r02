@@ -14,7 +14,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build cmake wget xz-utils file
-          pip install west
+          pip install west pyelftools
 
       - name: Install Zephyr SDK
         run: |
