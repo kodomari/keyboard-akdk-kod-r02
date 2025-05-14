@@ -34,7 +34,7 @@ jobs:
       - name: Build all specified shields
         run: |
           set -e
-          shields=("kod_01_left" "kod_01_right" "settings_reset")
+          shields=("kod_01_left" "kod_01_right")
           mkdir -p build
           for shield in "${shields[@]}"; do
             echo "=== Building for shield: $shield ==="
