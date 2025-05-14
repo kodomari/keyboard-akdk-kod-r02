@@ -21,8 +21,8 @@
 &spi0 {
     compatible = "nordic,nrf-spim";
     pinctrl-0 = <&spi0_default>;
-    // pinctrl-1 = <&spi0_sleep>;
-    pinctrl-names = "default";
+    // pinctrl-1 = <&spi0_sleep>;  ← 使用したければ有効化可能
+    pinctrl-names = "default";     // ← "sleep" を追加してもOK（定義あるので）
 };
 
 zephyr_udc0: &usbd {
@@ -70,7 +70,7 @@ zephyr_udc0: &usbd {
         #gpio-cells = <2>;
         gpio-map-mask = <0xffffffff 0xffffffc0>;
         gpio-map-pass-thru = <0 0x3f>;
-        gpio-map = <1 0 &gpio0 10 0>, <2 0 &gpio0 9 0>, ... ;
+        gpio-map = <1 0 &gpio0 10 0>, <2 0 &gpio0 9 0>;  // ← 修正: 最後の `...` を仮に置換
     };
 
     leds {
@@ -87,7 +87,7 @@ zephyr_udc0: &usbd {
         full-ohms = <3000000>;  // (2000000 + 1000000)
     };
 
-    pinctrl: pinctrl {  // ← ここに移動
+    pinctrl: pinctrl {
         spi0_default: spi0_default {
             group1 {
                 psels = <
@@ -103,8 +103,5 @@ zephyr_udc0: &usbd {
                 psels = <>;
             };
         };
-
-   };
-
     };
 };
