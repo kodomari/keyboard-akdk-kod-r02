@@ -87,7 +87,7 @@ zephyr_udc0: &usbd {
         full-ohms = <3000000>;  // (2000000 + 1000000)
     };
 
-    pinctrl: pinctrl {
+    pinctrl {
         spi0_default: spi0_default {
             group1 {
                 psels = <
