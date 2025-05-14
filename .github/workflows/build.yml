@@ -16,9 +16,9 @@ jobs:
           sudo apt-get install -y ninja-build cmake wget xz-utils file
           pip install west pyelftools
 
-       - name: Install protoc (for nanopb)
-         run: |
-         sudo apt-get install -y protobuf-compiler
+      - name: Install protoc (for nanopb)
+        run: |
+          sudo apt-get install -y protobuf-compiler
 
       - name: Install Zephyr SDK
         run: |
