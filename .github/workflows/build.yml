@@ -10,10 +10,11 @@ jobs:
       - name: Checkout user config
         uses: actions/checkout@v3
 
-      - name: Set up Zephyr and west
+      - name: Clone ZMK firmware
         run: |
-          pip install west
-          west init -m https://github.com/zmkfirmware/zmk.git zmk
+          git clone https://github.com/zmkfirmware/zmk.git zmk
+          cd zmk
+          west init -l app
           west update
           west zephyr-export
 
