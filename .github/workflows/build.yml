@@ -38,13 +38,16 @@ jobs:
           for keymap in config/boards/shields/*/*.keymap; do
             shield=$(basename "$keymap" .keymap)
             echo "=== Building for shield: $shield ==="
-            west build -s zmk/app -b akdk_bt1 -d build/$shield \
+            cd zmk
+            west build -s app -b akdk_bt1 -d ../build/$shield \
               -- -DSHIELD=$shield \
                  -DZMK_CONFIG=${{ github.workspace }}/config \
                  -DZMK_EXTRA_MODULES=${{ github.workspace }} \
                  -DCONFIG_ZMK_STUDIO=y \
                  -DSNIPPET=studio-rpc-usb-uart
+            cd ..
           done
+
         env:
           ZEPHYR_SDK_INSTALL_DIR: $HOME/zephyr-sdk
 
