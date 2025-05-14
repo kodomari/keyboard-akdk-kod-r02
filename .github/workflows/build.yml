@@ -10,8 +10,9 @@ jobs:
       - name: Checkout user config
         uses: actions/checkout@v3
 
-      - name: Clone ZMK firmware
+      - name: Install west and clone ZMK
         run: |
+          pip install west
           git clone https://github.com/zmkfirmware/zmk.git zmk
           cd zmk
           west init -l app
