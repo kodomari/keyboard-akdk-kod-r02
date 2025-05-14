@@ -35,7 +35,7 @@ jobs:
         run: |
           set -e
           mkdir -p build
-          for keymap in config/boards/shields/*/*.keymap; do
+          for keymap in config/boards/shields/*/*_*.keymap; do
             shield=$(basename "$keymap" .keymap)
             echo "=== Building for shield: $shield ==="
             cd zmk
@@ -57,4 +57,3 @@ jobs:
           name: firmware
           path: |
             build/**/zephyr/zmk.uf2
-
