@@ -1,6 +1,28 @@
 name: Build ZMK firmware
+
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout user config
+        uses: actions/checkout@v3
+
+      - name: Set up ZMK repo
+        uses: zmkfirmware/zmk/setup-zmk@main
+
+      - name: Build ZMK firmware
+        run: |
+          west build -s zmk/app -d build/akdk_bt1_left -b akdk_bt1 \
+            -- -DZMK_CONFIG=config \
+               -DSHIELD=kod_01_left \
+               -DZMK_EXTRA_MODULES=${{ github.workspace }} \
+               -DCONFIG_ZMK_STUDIO=y \
+               -DSNIPPET=studio-rpc-usb-uart
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: firmware
+          path: build/akdk_bt1_left/zephyr/zmk.uf2
