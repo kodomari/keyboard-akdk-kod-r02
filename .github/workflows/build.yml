@@ -31,12 +31,12 @@ jobs:
           west update
           west zephyr-export
 
-      - name: Build all shields automatically
+      - name: Build all specified shields
         run: |
           set -e
+          shields=("kod_01_left" "kod_01_right" "settings_reset")
           mkdir -p build
-          for keymap in config/boards/shields/*/*_{left,right,reset}.keymap; do
-            shield=$(basename "$keymap" .keymap)
+          for shield in "${shields[@]}"; do
             echo "=== Building for shield: $shield ==="
             cd zmk
             west build -s app -b akdk_bt1 -d ../build/$shield \
