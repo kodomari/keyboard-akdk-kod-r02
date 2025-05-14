@@ -5,24 +5,35 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout user config
+      - name: Checkout this repo (user config)
         uses: actions/checkout@v3
 
-      - name: Set up ZMK repo
-        uses: zmkfirmware/zmk/setup-zmk@main
+      - name: Checkout ZMK (main repo)
+        uses: actions/checkout@v3
+        with:
+          repository: zmkfirmware/zmk
+          path: zmk
 
-      - name: Build ZMK firmware
+      - name: Set up Zephyr
         run: |
-          west build -s zmk/app -d build/akdk_bt1_left -b akdk_bt1 \
-            -- -DZMK_CONFIG=config \
-               -DSHIELD=kod_01_left \
+          pip install west
+          west init -l zmk/app
+          west update
+          west zephyr-export
+
+      - name: Build firmware (left)
+        run: |
+          west build -s zmk/app -b akdk_bt1 -d build/left \
+            -- -DSHIELD=kod_01_left \
+               -DZMK_CONFIG=${{ github.workspace }}/config \
                -DZMK_EXTRA_MODULES=${{ github.workspace }} \
                -DCONFIG_ZMK_STUDIO=y \
                -DSNIPPET=studio-rpc-usb-uart
 
-      - name: Upload firmware
+      - name: Upload UF2 firmware
         uses: actions/upload-artifact@v3
         with:
           name: firmware
-          path: build/akdk_bt1_left/zephyr/zmk.uf2
+          path: build/left/zephyr/zmk.uf2
