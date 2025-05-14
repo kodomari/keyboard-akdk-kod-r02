@@ -7,19 +7,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout this repo (user config)
+      - name: Checkout user config
         uses: actions/checkout@v3
-
-      - name: Checkout ZMK (main repo)
-        uses: actions/checkout@v3
-        with:
-          repository: zmkfirmware/zmk
-          path: zmk
 
       - name: Set up Zephyr and west
         run: |
           pip install west
-          west init -l zmk/app
+          west init -m https://github.com/zmkfirmware/zmk.git zmk
           west update
           west zephyr-export
 
@@ -32,7 +26,7 @@ jobs:
                -DCONFIG_ZMK_STUDIO=y \
                -DSNIPPET=studio-rpc-usb-uart
 
-      - name: Upload UF2 firmware
+      - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
           name: firmware
