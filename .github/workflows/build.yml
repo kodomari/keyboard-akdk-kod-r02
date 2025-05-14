@@ -1,4 +1,4 @@
-name: Build ZMK firmware
+name: Build ZMK firmware with Studio and multiple shields
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -13,19 +13,15 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build cmake wget xz-utils file
+          sudo apt-get install -y ninja-build cmake wget xz-utils file python3-pip protobuf-compiler
           pip install west pyelftools protobuf grpcio-tools
-
-      - name: Install protoc (for nanopb)
-        run: |
-          sudo apt-get install -y protobuf-compiler
 
       - name: Install Zephyr SDK
         run: |
           wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.3/zephyr-sdk-0.16.3_linux-x86_64.tar.xz
           tar xf zephyr-sdk-0.16.3_linux-x86_64.tar.xz
           mv zephyr-sdk-0.16.3 $HOME/zephyr-sdk
-          $HOME/zephyr-sdk/setup.sh -t all
+          $HOME/zephyr-sdk/setup.sh -t all -h
 
       - name: Clone ZMK and set up west
         run: |
@@ -35,22 +31,26 @@ jobs:
           west update
           west zephyr-export
 
-      - name: Build firmware
+      - name: Build all shields automatically
         run: |
-          cd zmk
-          west build -s app -b akdk_bt1 -d ../build/left \
-            -- -DSHIELD=kod_01_left \
-               -DZMK_CONFIG=${{ github.workspace }}/config \
-               -DZMK_EXTRA_MODULES=${{ github.workspace }} \
-               -DCONFIG_ZMK_STUDIO=y \
-               -DSNIPPET=studio-rpc-usb-uart \
-               -DZEPHYR_SDK_INSTALL_DIR=$HOME/zephyr-sdk
+          set -e
+          mkdir -p build
+          for keymap in config/boards/shields/*/*.keymap; do
+            shield=$(basename "$keymap" .keymap)
+            echo "=== Building for shield: $shield ==="
+            west build -s zmk/app -b akdk_bt1 -d build/$shield \
+              -- -DSHIELD=$shield \
+                 -DZMK_CONFIG=${{ github.workspace }}/config \
+                 -DZMK_EXTRA_MODULES=${{ github.workspace }} \
+                 -DCONFIG_ZMK_STUDIO=y \
+                 -DSNIPPET=studio-rpc-usb-uart
+          done
         env:
           ZEPHYR_SDK_INSTALL_DIR: $HOME/zephyr-sdk
 
-      - name: Upload firmware
+      - name: Upload all UF2 files
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: build/left/zephyr/zmk.uf2
-
+          path: |
+            build/**/zephyr/zmk.uf2
