@@ -21,7 +21,7 @@ jobs:
           wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.3/zephyr-sdk-0.16.3_linux-x86_64.tar.xz
           tar xf zephyr-sdk-0.16.3_linux-x86_64.tar.xz
           mv zephyr-sdk-0.16.3 $HOME/zephyr-sdk
-          $HOME/zephyr-sdk/setup.sh -t all -h
+          $HOME/zephyr-sdk/setup.sh -t all
 
       - name: Clone ZMK and set up west
         run: |
@@ -48,53 +48,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: build/left/zephyr/zmk.uf2name: Build ZMK firmware
-
-on: [push, pull_request, workflow_dispatch]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout user config
-        uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build cmake wget xz-utils file
-          pip install west
-
-      - name: Install Zephyr SDK
-        run: |
-          wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.3/zephyr-sdk-0.16.3_linux-x86_64.tar.xz
-          tar xf zephyr-sdk-0.16.3_linux-x86_64.tar.xz
-          mv zephyr-sdk-0.16.3 $HOME/zephyr-sdk
-          $HOME/zephyr-sdk/setup.sh -t all
-
-      - name: Clone ZMK and set up west
-        run: |
-          git clone https://github.com/zmkfirmware/zmk.git zmk
-          cd zmk
-          west init -l app
-          west update
-          west zephyr-export
-
-      - name: Build firmware
-        run: |
-          cd zmk
-          west build -s app -b akdk_bt1 -d ../build/left \
-            -- -DSHIELD=kod_01_left \
-               -DZMK_CONFIG=${{ github.workspace }}/config \
-               -DZMK_EXTRA_MODULES=${{ github.workspace }} \
-               -DCONFIG_ZMK_STUDIO=y \
-               -DSNIPPET=studio-rpc-usb-uart
-        env:
-          ZEPHYR_SDK_INSTALL_DIR: $HOME/zephyr-sdk
-
-      - name: Upload firmware
-        uses: actions/upload-artifact@v4
-        with:
-          name: firmware
           path: build/left/zephyr/zmk.uf2
+
