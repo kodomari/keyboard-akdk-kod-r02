@@ -16,7 +16,7 @@ jobs:
           repository: zmkfirmware/zmk
           path: zmk
 
-      - name: Set up Zephyr
+      - name: Set up Zephyr and west
         run: |
           pip install west
           west init -l zmk/app
@@ -33,7 +33,7 @@ jobs:
                -DSNIPPET=studio-rpc-usb-uart
 
       - name: Upload UF2 firmware
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: firmware
           path: build/left/zephyr/zmk.uf2
